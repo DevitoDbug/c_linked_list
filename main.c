@@ -5,11 +5,11 @@ typedef struct Node {
         int value;
         struct Node *next;
 } Node;
-Node *NewNode();
+Node *NewNode(int value);
 void PrintNode(Node *n, char output[], size_t output_size);
 
 typedef struct LinkedList {
-        struct Node *head;
+        Node *head;
 } LinkedList;
 LinkedList *NewLinkedList();
 void PrintLinkedList(LinkedList *l);
@@ -21,32 +21,27 @@ void CleanUpList(LinkedList *l);
 
 int main() {
     LinkedList *l = NewLinkedList();
-    AddToEnd(l, 10);
-    AddToEnd(l, 9);
-    AddToEnd(l, 8);
-    AddToEnd(l, 7);
-    AddToEnd(l, 6);
-    AddToEnd(l, 5);
-    AddToStart(l, 11);
+    // AddToEnd(l, 10);
+    // AddToStart(l, 9);
+    // AddToStart(l, 8);
     PrintLinkedList(l);
-    AddAtIndex(l, 100, 3);
+    AddAtIndex(l, 1, 11);
     PrintLinkedList(l);
-    DeleteAtIndex(l, 3);
-    PrintLinkedList(l);
-    CleanUpList(l);
 }
 
-Node *NewNode() {
+Node *NewNode(int value) {
     Node *n = malloc(sizeof(struct Node));
+    n->value = value;
+    n->next = NULL;
     return n;
 }
 void PrintNode(Node *n, char output[], size_t output_size) {
     if (n == NULL) {
-        printf("NULL node passed in");
+        printf("NULL node passed in\n");
         return;
     }
     if (output_size == 0) {
-        printf("output size set to 0");
+        printf("output size set to 0\n");
         return;
     }
 
@@ -56,17 +51,18 @@ void PrintNode(Node *n, char output[], size_t output_size) {
 
 LinkedList *NewLinkedList() {
     LinkedList *l = malloc(sizeof(LinkedList));
+    l->head = NULL;
     return l;
 }
 
 void PrintLinkedList(LinkedList *l) {
     if (l == NULL) {
-        printf("Linked list passed in is NULL");
+        printf("Linked list passed in is NULL\n");
         return;
     }
 
     if (l->head == NULL) {
-        printf("Empty list");
+        printf("Empty list\n");
         return;
     }
 
@@ -92,8 +88,7 @@ void AddToEnd(LinkedList *l, int value) {
         return;
     }
 
-    Node *new_node = NewNode();
-    new_node->value = value;
+    Node *new_node = NewNode(value);
     if (l->head == NULL) {
         l->head = new_node;
         return;
@@ -113,8 +108,7 @@ void AddToStart(LinkedList *l, int value) {
         return;
     }
 
-    Node *new_node = NewNode();
-    new_node->value = value;
+    Node *new_node = NewNode(value);
     if (l->head == NULL) {
         l->head = new_node;
         return;
@@ -124,38 +118,41 @@ void AddToStart(LinkedList *l, int value) {
     l->head = new_node;
 }
 
-void AddAtIndex(LinkedList *l, int value, int index) {
+void AddAtIndex(LinkedList *l, int index, int value) {
     if (l == NULL) {
-        printf("Linked list passed in is NULL");
+        printf("Linked list passed in is NULL\n");
         return;
     }
 
     if (index < 0) {
-        printf("invalid index provided");
+        printf("invalid index provided\n");
         return;
     }
 
-    Node *new_node = NewNode();
-    new_node->value = value;
-    if (l->head == NULL && index == 0) {
-        l->head = new_node;
+    Node *new_node = NewNode(value);
+    if (index == 0) {
+        AddToStart(l, value);
         return;
     }
 
     Node *current = l->head;
+    Node *prev = NULL;
     int counter = 0;
-    while (current->next != NULL) {
-        if (index == counter + 1) {
-            new_node->next = current->next;
-            current->next = new_node;
+    while (current != NULL) {
+        if (index == counter) {
+            prev->next = new_node;
+            new_node->next = current;
             return;
         }
 
+        prev = current;
         current = current->next;
         counter++;
     }
 
-    current->next = new_node;
+    if (prev != NULL && index == counter + 1) {
+        prev->next = new_node;
+    }
 }
 
 void DeleteAtIndex(LinkedList *l, int index) {
