@@ -21,11 +21,10 @@ void CleanUpList(LinkedList *l);
 
 int main() {
     LinkedList *l = NewLinkedList();
-    // AddToEnd(l, 10);
-    // AddToStart(l, 9);
-    // AddToStart(l, 8);
+    AddToEnd(l, 10);
+    AddToStart(l, 9);
     PrintLinkedList(l);
-    AddAtIndex(l, 1, 11);
+    DeleteAtIndex(l, 3);
     PrintLinkedList(l);
 }
 
@@ -156,8 +155,8 @@ void AddAtIndex(LinkedList *l, int index, int value) {
 }
 
 void DeleteAtIndex(LinkedList *l, int index) {
-    if (l == NULL) {
-        printf("Linked list passed in is NULL");
+    if (l == NULL || l->head == NULL) {
+        printf("invalid linked list");
         return;
     }
 
@@ -166,23 +165,32 @@ void DeleteAtIndex(LinkedList *l, int index) {
         return;
     }
 
-    if (l->head == NULL) {
-        return;
-    }
-
     Node *current = l->head;
-    Node *deleteNode = NULL;
+    Node *prev = NULL;
     int counter = 0;
-    while (current->next != NULL) {
-        if (index == counter + 1) {
-            deleteNode = current->next;
-            current->next = current->next->next;
-            if (deleteNode != NULL) {
-                free(deleteNode);
+    while (current != NULL) {
+        // 4 3
+        // index = 1
+        if (index == counter) {
+            Node *deleted = current;
+            if (index == 0) {
+                l->head = current->next;
+                if (current != NULL) {
+                    free(deleted);
+                }
+                return;
             }
-            return;
+
+            if (prev != NULL) {
+                prev->next = current->next;
+                if (current != NULL) {
+                    free(deleted);
+                }
+                return;
+            }
         }
 
+        prev = current;
         current = current->next;
         counter++;
     }
